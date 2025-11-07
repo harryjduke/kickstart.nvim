@@ -711,7 +711,19 @@ require('lazy').setup({
           },
         },
         powershell_es = {},
-        clangd = {},
+        clangd = {
+          cmd = {
+            'clangd',
+            '--background-index', -- Index project in background for better code navigation
+            '--clang-tidy', -- Enable clang-tidy checks for code quality warnings
+            '--completion-style=detailed', -- Show more information in completion items
+            '--header-insertion=iwyu', -- Smart header insertion following include-what-you-use
+            -- '--pch-storage=memory', -- Store precompiled headers in memory (faster but uses more RAM)
+            -- '--all-scopes-completion', -- Show completions from all accessible scopes, not just current
+            -- '--function-arg-placeholders', -- Show parameter placeholders in function completions (snippets already do this, I think)
+            '--log=error', -- Only log errors (reduces noise in logs)
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
