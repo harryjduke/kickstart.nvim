@@ -166,6 +166,15 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Use PowerShell 7 as the shell instead of cmd.exe, :help shell-powershell for more info
+vim.o.shell = vim.fn.executable 'pwsh' == 1 and 'pwsh' or 'powershell'
+vim.o.shellcmdflag =
+  "-NoLogo -NonInteractive -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';$PSStyle.OutputRendering='plaintext';Remove-Alias -Force -ErrorAction SilentlyContinue tee;"
+vim.o.shellredir = '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode'
+vim.o.shellpipe = '2>&1 | %%{ "$_" } | tee %s; exit $LastExitCode'
+vim.o.shellquote = ''
+vim.o.shellxquote = ''
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -200,10 +209,14 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+-- This is the case with Windows Terminal so I use <C-M-[h/l/j/k]> instead of <C-S-[h/l/j/k]>
+vim.keymap.set('n', '<C-M-h>', '<C-w>H', { desc = 'Move window to the left' })
+vim.keymap.set('n', '<C-M-l>', '<C-w>L', { desc = 'Move window to the right' })
+vim.keymap.set('n', '<C-M-j>', '<C-w>J', { desc = 'Move window to the lower' })
+vim.keymap.set('n', '<C-M-k>', '<C-w>K', { desc = 'Move window to the upper' })
+
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>', { desc = 'Swap the current line upwards' })
+vim.keymap.set('n', '<A-j>', ':m .1<CR>', { desc = 'Swap the current line downwards' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -671,7 +684,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -698,6 +710,8 @@ require('lazy').setup({
             },
           },
         },
+        powershell_es = {},
+        clangd = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -799,12 +813,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
         opts = {},
       },
