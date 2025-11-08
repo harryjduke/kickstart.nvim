@@ -260,7 +260,10 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  {
+    'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+    opts = {},
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -742,6 +745,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        -- 'clang-format', -- Not required as clangd handles formatting
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -794,6 +798,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        -- c = { 'clang-format' }, -- I dont seem to need this as the lsp fallback handles it
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
