@@ -98,7 +98,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
-        'codelldb',
+        'cpptools',
       },
     }
 
@@ -148,6 +148,34 @@ return {
         -- On Windows delve must be run attached or it crashes.
         -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
         detached = vim.fn.has 'win32' == 0,
+      },
+    }
+
+    -- Configure C/C++ debugging with GDB
+    -- The default is lldb which does not work with my mingw toolchain
+    dap.adapters.gdb = {
+      type = 'executable',
+      command = 'gdb',
+      args = { '-i', 'dap' },
+    }
+
+    dap.configurations.c = {
+      {
+        name = 'Launch (GDB)',
+        type = 'gdb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/build_debug/bin/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopAtBeginningOfMainSubprogram = false,
+      },
+      {
+        name = 'Attach to process (GDB)',
+        type = 'gdb',
+        request = 'attach',
+        processId = require('dap.utils').pick_process,
+        cwd = '${workspaceFolder}',
       },
     }
   end,
