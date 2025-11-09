@@ -838,6 +838,29 @@ require('lazy').setup({
           },
         },
         opts = {},
+        config = function()
+          -- Auto-exit snippet mode when cursor moves outside the active snippet node
+          -- Source: https://github.com/L3MON4D3/LuaSnip/issues/747#issuecomment-1406946217
+          local luasnip = require 'luasnip'
+          vim.api.nvim_create_autocmd('CursorMovedI', {
+            pattern = '*',
+            callback = function(ev)
+              if not luasnip.session or not luasnip.session.current_nodes[ev.buf] or luasnip.session.jump_active then
+                return
+              end
+
+              local current_node = luasnip.session.current_nodes[ev.buf]
+              local current_start, current_end = current_node:get_buf_position()
+              current_start[1] = current_start[1] + 1 -- (1, 0) indexed
+              current_end[1] = current_end[1] + 1 -- (1, 0) indexed
+              local cursor = vim.api.nvim_win_get_cursor(0)
+
+              if cursor[1] < current_start[1] or cursor[1] > current_end[1] or cursor[2] < current_start[2] or cursor[2] > current_end[2] then
+                luasnip.unlink_current()
+              end
+            end,
+          })
+        end,
       },
       'folke/lazydev.nvim',
     },
