@@ -725,6 +725,7 @@ require('lazy').setup({
             -- '--all-scopes-completion', -- Show completions from all accessible scopes, not just current
             -- '--function-arg-placeholders', -- Show parameter placeholders in function completions (snippets already do this, I think)
             '--log=error', -- Only log errors (reduces noise in logs)
+            '--enable-config',
           },
         },
       }
@@ -1016,13 +1017,13 @@ require('lazy').setup({
   -- place them in the correct locations.
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
+
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
